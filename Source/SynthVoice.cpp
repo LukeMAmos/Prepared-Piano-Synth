@@ -14,6 +14,8 @@ void SynthVoice::prepare(const juce::dsp::ProcessSpec& spec)
     for(int i = 0 ; i < 2 ; i++){
         reverb[i].prepare(sampleRate , 2000);
     }
+    filter.prepare(sampleRate);
+    
     privateBuffer.setSize((int)spec.numChannels, (int)spec.maximumBlockSize);
     privateBuffer.clear();
 }
@@ -61,7 +63,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         
         for(int s = 0 ; s < numSamples ; s++){
             
-            privateBuffer.setSample(ch, s, reverb[ch].process(privateBuffer.getSample(ch, s)));
+            privateBuffer.setSample(ch, s, (reverb[ch].process(filter.process(privateBuffer.getSample(ch, s)))));
+            
         }
     }
     
@@ -90,4 +93,10 @@ void SynthVoice::updateValues(int midiNoteNumber)
     for(int i = 0 ; i < 2 ; i++){
         reverb[i].setParameters(coe,2500.0f, roomSize, wetAm);
     }
+    
+    float cutoff = data.cutoffFrequency.load();
+    float resonance = data.filterResonance.load();
+    auto type = data.filterType.load();
+    
+    filter.setParameters(cutoff, resonance, type);
 }

@@ -228,7 +228,7 @@ private:
     
 };
 
-
+//Take the input in multiple it by a gain value softly 
 class SoftDistortion{
     
 public:
@@ -243,6 +243,8 @@ private:
 
     
 };
+
+
 
 enum FilterTypeBiquad{
     

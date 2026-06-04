@@ -55,11 +55,12 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     sustain.setNumDecimalPlacesToDisplay(2);
     addAndMakeVisible(sustain);
     
-    filterType.addItem("None", 1);
-    filterType.addItem("Lowpass", 2);
-    filterType.addItem("Highpass", 3);
+    filterType.addItem("Lowpass", 1);
+    filterType.addItem("Highpass", 2);
+    filterType.addItem("Bandpass", 3);
+    filterType.addItem("Bandreject", 4);
     filterType.onChange = [this](){
-        audioProcessor.getNoteParams(currentMidiNote).filterType.store((FilterType)(filterType.getSelectedId() - 1));
+        audioProcessor.getNoteParams(currentMidiNote).filterType.store((FilterTypeBiquad)(filterType.getSelectedId() - 1));
     };
     addAndMakeVisible(filterType);
     
@@ -210,7 +211,7 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     filterBox.flexDirection = juce::FlexBox::Direction::column;
     filterBox.justifyContent = juce::FlexBox::JustifyContent::flexStart;
     
-    filterBox.items.add(juce::FlexItem(filterType).withWidth(80).withHeight(40).withMargin(juce::FlexItem::Margin(10, 0, 10, 0)));
+    filterBox.items.add(juce::FlexItem(filterType).withWidth(120).withHeight(40).withMargin(juce::FlexItem::Margin(10, 0, 10, 0)));
     filterBox.items.add(juce::FlexItem(cutoffFrequency).withWidth(80).withHeight(80).withMargin(juce::FlexItem::Margin(10, 0, 10, 0)));
     filterBox.items.add(juce::FlexItem(filterResonance).withWidth(80).withHeight(80).withMargin(juce::FlexItem::Margin(10, 0, 10, 0)));
 
@@ -267,11 +268,12 @@ void PreparedPianoSynthAudioProcessorEditor::handleNoteOff(juce::MidiKeyboardSta
     
 }
 
+//Updating the displayed value on the dial when the current note on changes.
 void PreparedPianoSynthAudioProcessorEditor::updateDials(int midiNoteNumber){
     
     auto& params = audioProcessor.getNoteParams(midiNoteNumber);
     
-    attack.setValue(params.attack , juce::dontSendNotification); //Updating the displayed value on the dial when the current note on changes.
+    attack.setValue(params.attack , juce::dontSendNotification);
     decay.setValue(params.decay , juce::dontSendNotification) ;
     release.setValue(params.release , juce::dontSendNotification) ;
     sustain.setValue(params.sustain, juce::dontSendNotification) ;

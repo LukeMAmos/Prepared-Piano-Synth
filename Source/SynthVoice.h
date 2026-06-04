@@ -12,12 +12,6 @@
 #include <JuceHeader.h>
 #include "SynthEffects.h"
 
-enum class FilterType : int {
-    
-  None,
-  Lowpass,
-  Highpass
-};
 
 struct NoteParams{
     
@@ -26,7 +20,7 @@ struct NoteParams{
     float release = 0.1f;
     float sustain = 1.0f;
     
-    std::atomic<FilterType> filterType{FilterType::None}; //0 = none , 1 = lowpass, 2 = highpass
+    std::atomic<FilterTypeBiquad> filterType{FilterTypeBiquad::lowpass}; 
     std::atomic<float> filterResonance{0.5f};
     std::atomic<float> cutoffFrequency{2500.0f};
     
@@ -70,7 +64,7 @@ private:
     juce::dsp::Oscillator<float> sineOsc;
     juce::ADSR adsr;
     
-    std::array<NoteParams, 128>* paramsArray;
+    std::array<NoteParams, 128>* paramsArray; //Settings for every single note on the midi keyboard 
     
     juce::AudioBuffer<float> privateBuffer;
     
@@ -83,7 +77,8 @@ private:
     
     //Effects
     
-    Reverb reverb[2]; 
+    Reverb reverb[2];
+    BiquadFilter filter; 
     
     
 };
