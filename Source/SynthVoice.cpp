@@ -28,6 +28,7 @@ bool SynthVoice::canPlaySound(juce::SynthesiserSound* sound)
 void SynthVoice::startNote(int midiNoteNumber, float velocity,
                             juce::SynthesiserSound* sound, int currentPitchWheelPosition)
 {
+    //Call to update the parameters 
     updateValues(midiNoteNumber);
     recentMidiNote = midiNoteNumber;
 
@@ -40,7 +41,7 @@ void SynthVoice::stopNote(float velocity, bool allowTailOff)
 {
 
         adsr.noteOff();
-        ringReverb = true;
+        ringReverb = true; //Allow the reverb to ring out before releasing the note to be used elsewhere
 
 }
 
@@ -75,11 +76,12 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 void SynthVoice::pitchWheelMoved(int newValue) {}
 void SynthVoice::controllerMoved(int controllerNumber, int newValue) {}
 
+//Updating the values for the synth voice
 void SynthVoice::updateValues(int midiNoteNumber)
 {
     juce::ADSR::Parameters adsrParams;
     
-    auto& data = paramsArray->at(midiNoteNumber);
+    auto& data = paramsArray->at(midiNoteNumber); //getting the data at the specific midi note , then using that data to control the effects/ parameters of that voice
     adsrParams.attack  = data.attack;
     adsrParams.decay   = data.decay;
     adsrParams.sustain = data.sustain;
