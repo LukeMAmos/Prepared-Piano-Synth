@@ -19,6 +19,15 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     setSize (900, 500);
     setLookAndFeel(&customLookAndFeel);
     
+    oscType.addItem("Sine", 1);
+    oscType.addItem("Square", 2 );
+    oscType.addItem("Triangle", 3);
+    oscType.onChange = [this](){
+        audioProcessor.getNoteParams(currentMidiNote).oscType.store((OSCType)(oscType.getSelectedId() - 1));
+    };
+    addAndMakeVisible(oscType);
+    
+    
     attack.setRange(0.2, 5.0);
     attack.setSliderStyle(juce::Slider::RotaryVerticalDrag);
     attack.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
@@ -134,6 +143,9 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     addAndMakeVisible(visualKeyboard);
     
     //Grouping the components together
+    oscGroup.setText("Oscillator");
+    addAndMakeVisible(oscGroup);
+    
     adsrGroup.setText("ADSR");
     addAndMakeVisible(adsrGroup);
     
@@ -213,11 +225,29 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     auto area = getLocalBounds().reduced(20); // padding
     auto keyboardArea = area.removeFromBottom(100);
     visualKeyboard.setBounds(keyboardArea);
-
-    auto adsrArea   = area.removeFromLeft(350);
-    auto filterArea = area.removeFromLeft(200);
-    auto reverbArea = area.removeFromTop(150);
-    auto distortionArea = area ;
+    
+    //-----*** Left Column
+    auto leftColumn = area.removeFromLeft(350);
+    
+    auto oscArea = leftColumn.removeFromTop(100);
+    auto adsrArea   = leftColumn;
+    
+    //-----*** Miidd Column
+    auto middleColumn = area.removeFromLeft(160);
+    auto filterArea = middleColumn;
+    
+    //-----*** Right Column
+    auto rightColumn = area;
+    
+    auto reverbArea = rightColumn.removeFromTop(150);
+    auto distortionArea = rightColumn ;
+    
+    //OSC
+    juce::FlexBox oscBox;
+    oscBox.flexDirection = juce::FlexBox::Direction::row;
+    oscBox.justifyContent = juce::FlexBox::JustifyContent::flexStart;
+    
+    oscBox.items.add(juce::FlexItem(oscType).withWidth(120).withHeight(40));
     
     //Adsr
     juce::FlexBox adsrBox;
@@ -259,6 +289,13 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     
     
     //Grouping the components
+    
+    oscGroup.setBounds(oscArea);
+    auto oscInner = oscArea.reduced(10);
+    oscInner.removeFromTop(5);
+    oscBox.performLayout(oscInner.reduced(10).toFloat());
+
+    
     adsrGroup.setBounds(adsrArea);
     auto adsrInner = adsrArea.reduced(10);
     adsrInner.removeFromTop(20);
@@ -311,6 +348,8 @@ void PreparedPianoSynthAudioProcessorEditor::handleNoteOff(juce::MidiKeyboardSta
 void PreparedPianoSynthAudioProcessorEditor::updateDials(int midiNoteNumber){
     
     auto& params = audioProcessor.getNoteParams(midiNoteNumber);
+    
+    oscType.setSelectedId((int)params.oscType.load()+1 , juce::dontSendNotification);
     
     attack.setValue(params.attack , juce::dontSendNotification);
     decay.setValue(params.decay , juce::dontSendNotification) ;

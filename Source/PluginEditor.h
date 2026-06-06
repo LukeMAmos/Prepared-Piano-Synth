@@ -57,15 +57,20 @@ private:
     juce::Slider disInGain;
     juce::Slider disOutGain;
     
+    juce::ComboBox oscType; 
+    
+    
     //Grouping dials for UI
     juce::GroupComponent adsrGroup;
     juce::GroupComponent filterGroup;
     juce::GroupComponent reverbGroup;
-    juce::GroupComponent distortionGroup; 
+    juce::GroupComponent distortionGroup;
+    juce::GroupComponent oscGroup;
     
     //Labels for the dials
     juce::Label attackLabel, decayLabel, sustainLabel, releaseLabel;
     juce::Label filterTypeLabel , resonanceLabel, cutoffLabel;
+    juce::Label disInLabel , disOutLabel;
     juce::Label reverbLabels[4];
     juce::String reverbLabelNames[4] = {"COE", "Room Size" , "Wet level"};
     

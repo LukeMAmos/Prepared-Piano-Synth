@@ -37,7 +37,7 @@ struct NoteParams{
     std::atomic<float> inputDistortion{1.0f};
     std::atomic<float> outputDistortion{1.0f};
     
-    std::atomic<OSCType> oscType{OSCType::sqaure}; 
+    std::atomic<OSCType> oscType{OSCType::Square}; 
 };
 
 
