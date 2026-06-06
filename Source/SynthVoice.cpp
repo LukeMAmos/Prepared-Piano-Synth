@@ -6,8 +6,8 @@ void SynthVoice::prepare(const juce::dsp::ProcessSpec& spec)
 {
     sampleRate = spec.sampleRate;
     
-    sineOsc.prepare(spec);
-    sineOsc.initialise([](float x){return x < 0.0f ? -1.0f : 1.0f;});
+    OSC.prepare(spec);
+    OSC.initialise([](float x){return x < 0.0f ? -1.0f : 1.0f;}); //Initalised as a square wave , implementing OSC switching for individual voicing
     
     adsr.setSampleRate(spec.sampleRate);
     
@@ -32,7 +32,7 @@ void SynthVoice::startNote(int midiNoteNumber, float velocity,
     updateValues(midiNoteNumber);
     recentMidiNote = midiNoteNumber;
 
-    sineOsc.setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
+    OSC.setFrequency(juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber));
     
     adsr.noteOn();
 }
@@ -56,7 +56,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     auto subBlock = block.getSubBlock(0, numSamples);
     juce::dsp::ProcessContextReplacing<float> context(subBlock);
 
-    sineOsc.process(context);
+    OSC.process(context);
     adsr.applyEnvelopeToBuffer(privateBuffer, 0, numSamples);
 
     
@@ -64,7 +64,7 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
         
         for(int s = 0 ; s < numSamples ; s++){
             
-            privateBuffer.setSample(ch, s, (reverb[ch].process(filter.process(privateBuffer.getSample(ch, s)))));
+            privateBuffer.setSample(ch, s, (reverb[ch].process(filter.process(distortion.process(privateBuffer.getSample(ch, s))))));
             
         }
     }
@@ -101,4 +101,33 @@ void SynthVoice::updateValues(int midiNoteNumber)
     auto type = data.filterType.load();
     
     filter.setParameters(cutoff, resonance, type);
+    
+    float inGainDis = data.inputDistortion.load();
+    float outGainDis = data.outputDistortion.load();
+    distortion.setParameters(inGainDis, outGainDis);
+    
+    if(previousType != data.oscType){ //Only switch or update the wave if there has been a change if no change then dont update the wave
+        updateOscillator(data.oscType);
+        previousType = data.oscType;
+    }
+}
+
+//Function for switching through cases and updating the wave type 
+void SynthVoice::updateOscillator(OSCType type){
+    
+    switch (type) {
+        case Sine:
+            OSC.initialise([](float x){return std::sin(x * 2 * M_PI);});
+            break;
+        case Square:
+            OSC.initialise([](float x){return x < 0.0f ? -1.0f : 1.0f;});
+            break;
+        case Triangle:
+            OSC.initialise([](float x){return x < 0.5f ? x * 4 - 1 : -x * 4 + 3 ;});
+            break;
+        default:
+            break;
+    }
+    
+    
 }

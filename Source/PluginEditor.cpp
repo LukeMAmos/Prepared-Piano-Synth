@@ -111,6 +111,25 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     wetLevel.setNumDecimalPlacesToDisplay(2);
     addAndMakeVisible(wetLevel);
     
+    disInGain.setRange(0.0, 10.0);
+    disInGain.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    disInGain.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+    disInGain.onValueChange = [this](){
+        audioProcessor.getNoteParams(currentMidiNote).inputDistortion = (float)disInGain.getValue();
+    };
+    disInGain.setNumDecimalPlacesToDisplay(2);
+    addAndMakeVisible(disInGain);
+    
+    
+    disOutGain.setRange(0.0, 10.0);
+    disOutGain.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    disOutGain.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+    disOutGain.onValueChange = [this](){
+        audioProcessor.getNoteParams(currentMidiNote).outputDistortion = (float)disOutGain.getValue();
+    };
+    disOutGain.setNumDecimalPlacesToDisplay(2);
+    addAndMakeVisible(disOutGain);
+    
     //Keyboard on screen
     addAndMakeVisible(visualKeyboard);
     
@@ -123,6 +142,9 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     
     reverbGroup.setText("Reverb");
     addAndMakeVisible(reverbGroup);
+    
+    distortionGroup.setText("Distortion");
+    addAndMakeVisible(distortionGroup);
     
     //Labels for each of the dials
     
@@ -166,6 +188,7 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
         
     }
     
+    //Distortion
     
 }
 
@@ -193,7 +216,8 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
 
     auto adsrArea   = area.removeFromLeft(350);
     auto filterArea = area.removeFromLeft(200);
-    auto reverbArea = area;
+    auto reverbArea = area.removeFromTop(150);
+    auto distortionArea = area ;
     
     //Adsr
     juce::FlexBox adsrBox;
@@ -225,6 +249,15 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     reverbBox.items.add(juce::FlexItem(roomSize).withWidth(80).withHeight(80));
     reverbBox.items.add(juce::FlexItem(wetLevel).withWidth(80).withHeight(80));
     
+    //Distortion
+    juce::FlexBox distortionBox;
+    distortionBox.flexDirection = juce::FlexBox::Direction::row;
+    distortionBox.flexWrap = juce::FlexBox::Wrap::wrap;
+    
+    distortionBox.items.add(juce::FlexItem(disInGain).withWidth(80).withHeight(80));
+    distortionBox.items.add(juce::FlexItem(disOutGain).withWidth(80).withHeight(80));
+    
+    
     //Grouping the components
     adsrGroup.setBounds(adsrArea);
     auto adsrInner = adsrArea.reduced(10);
@@ -253,6 +286,12 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
 
     for(int i = 0; i < 3; i++)
         reverbLabels[i].setBounds(reverbSliders[i]->getX(), reverbSliders[i]->getY() - 20, reverbSliders[i]->getWidth(), 20);
+    
+    distortionGroup.setBounds(distortionArea);
+    auto disInner = distortionArea.reduced(10);
+    disInner.removeFromTop(20);
+    distortionBox.performLayout(disInner.reduced(10));
+
     
 }
 
@@ -285,4 +324,8 @@ void PreparedPianoSynthAudioProcessorEditor::updateDials(int midiNoteNumber){
     coe.setValue(params.coe.load(), juce::dontSendNotification);
     roomSize.setValue(params.roomSize.load(), juce::dontSendNotification);
     wetLevel.setValue(params.wetLevel.load(), juce::dontSendNotification);
+    
+    disInGain.setValue(params.inputDistortion.load() , juce::dontSendNotification);
+    disOutGain.setValue(params.outputDistortion.load(), juce::dontSendNotification);
+    
 }

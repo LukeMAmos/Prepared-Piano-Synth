@@ -54,10 +54,14 @@ private:
     juce::Slider roomSize;
     juce::Slider wetLevel;
     
+    juce::Slider disInGain;
+    juce::Slider disOutGain;
+    
     //Grouping dials for UI
     juce::GroupComponent adsrGroup;
     juce::GroupComponent filterGroup;
     juce::GroupComponent reverbGroup;
+    juce::GroupComponent distortionGroup; 
     
     //Labels for the dials
     juce::Label attackLabel, decayLabel, sustainLabel, releaseLabel;

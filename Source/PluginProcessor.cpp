@@ -23,7 +23,7 @@ PreparedPianoSynthAudioProcessor::PreparedPianoSynthAudioProcessor()
 #endif
 {
     for(int i = 0; i < 16; i++)
-        synth.addVoice(new SynthVoice(&paramsArray));
+        synth.addVoice(new SynthVoice(&paramsArray)); //Takes the pointer location of the parameter array so that teh note being played on the voice can be updated with the correct data , an array is used here because its pointer poisiton is the same across the run time 
     synth.addSound(new SynthSound());
     
 }

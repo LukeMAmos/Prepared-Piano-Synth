@@ -12,6 +12,12 @@
 #include <JuceHeader.h>
 #include "SynthEffects.h"
 
+enum OSCType{
+
+    Sine,
+    Square,
+    Triangle
+};
 
 struct NoteParams{
     
@@ -27,6 +33,11 @@ struct NoteParams{
     std::atomic<float> coe{0.5f};
     std::atomic<float> roomSize{0.5f};
     std::atomic<float> wetLevel{0.2f};
+    
+    std::atomic<float> inputDistortion{1.0f};
+    std::atomic<float> outputDistortion{1.0f};
+    
+    std::atomic<OSCType> oscType{OSCType::sqaure}; 
 };
 
 
@@ -58,13 +69,16 @@ public:
         return adsr.isActive() || ringReverb ; 
     }
     
+    void updateOscillator(OSCType type); 
+    
 private:
     int recentMidiNote;
     
-    juce::dsp::Oscillator<float> sineOsc;
+    juce::dsp::Oscillator<float> OSC;
     juce::ADSR adsr;
     
-    std::array<NoteParams, 128>* paramsArray; //Settings for every single note on the midi keyboard 
+    OSCType previousType{Square}; 
+    std::array<NoteParams, 128>* paramsArray; //Settings for every single note on the midi keyboard
     
     juce::AudioBuffer<float> privateBuffer;
     
@@ -78,7 +92,8 @@ private:
     //Effects
     
     Reverb reverb[2];
-    BiquadFilter filter; 
+    BiquadFilter filter;
+    SoftDistortion distortion; 
     
     
 };

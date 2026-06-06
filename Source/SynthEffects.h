@@ -228,19 +228,43 @@ private:
     
 };
 
-//Take the input in multiple it by a gain value softly 
+//Take the input in multiple it by a gain value softly
+//To implement a hard clipped distortion you need to first need to apply a gain , then hard clip the audio , after hard clipping the wave needs to be shaped using a shaping function then an output gain applied to reduce the level of the signal back down to its original input level
 class SoftDistortion{
     
 public:
     
-    void prepare();
+    void prepare(double sampleRateIn);
     
-    void setParameters();
+    void setParameters(float inputGainIn , float outputGainIn){
+        
+        inputGain = inputGainIn;
+        outputGain = outputGainIn;
+    }
     
-    float process(); 
+    float process(float input){
+        
+        //Take the input multiply by the gain , if its over 1 set it to 1 , if its under minus 1 set it to -1
+        
+        input *= inputGain;
+        
+        if(input > 1 )
+            input = 1;
+        else if(input < -1)
+            input = -1;
+        
+        //Shape the rest of the signal
+        //apply the output gain and return the value
+        
+        input = std::sin(0.5 * M_PI * input);
+        
+        return (input * outputGain);
+    }
 
 private:
-
+    
+    float inputGain;
+    float outputGain;
     
 };
 
