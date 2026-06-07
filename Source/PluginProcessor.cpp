@@ -168,6 +168,10 @@ void PreparedPianoSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
     
+    if(visualiser.load() != nullptr){
+        
+        visualiser.load()->pushBuffer(buffer);
+    }
 }
 
 //==============================================================================

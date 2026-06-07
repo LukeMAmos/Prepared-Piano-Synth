@@ -30,6 +30,7 @@ public:
     
     void updateDials(int midiNoteNumber); 
 
+
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
@@ -73,6 +74,10 @@ private:
     juce::Label disInLabel , disOutLabel;
     juce::Label reverbLabels[4];
     juce::String reverbLabelNames[4] = {"COE", "Room Size" , "Wet level"};
+    
+    //Drawing the live waveform as the audio is outputted
+    
+    juce::AudioVisualiserComponent waveformAudioVisualiser{1};
     
     //Custom look
     CustomLookAndFeel customLookAndFeel; 

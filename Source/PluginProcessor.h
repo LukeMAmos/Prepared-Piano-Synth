@@ -62,13 +62,20 @@ public:
         return paramsArray[noteNumber]; 
     }
     
+    void setVisualiser(juce::AudioVisualiserComponent* vis){
+        
+        visualiser = vis;
+    }
+    
     juce::MidiKeyboardState keyboardState;
 private:
     
+    juce::AudioBuffer<float> currentAudioOut; 
     juce::Synthesiser synth;
     
     std::array<NoteParams, 128> paramsArray;
     
+    std::atomic<juce::AudioVisualiserComponent*> visualiser{nullptr};
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PreparedPianoSynthAudioProcessor)
 };
