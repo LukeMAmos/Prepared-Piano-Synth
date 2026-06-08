@@ -23,6 +23,13 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     audioProcessor.setVisualiser(&waveformAudioVisualiser);
     waveformAudioVisualiser.setSamplesPerBlock(16);
     
+    addAndMakeVisible(setAll);
+    setAll.onClick = [this](){
+        
+        
+    };
+    
+    
     oscType.addItem("Sine", 1);
     oscType.addItem("Square", 2 );
     oscType.addItem("Triangle", 3);
@@ -253,7 +260,8 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     oscBox.justifyContent = juce::FlexBox::JustifyContent::flexStart;
     
     oscBox.items.add(juce::FlexItem(oscType).withWidth(120).withHeight(40).withMargin(juce::FlexItem::Margin(0, 30, 0, 0)));
-    oscBox.items.add(juce::FlexItem(waveformAudioVisualiser).withWidth(100).withHeight(50));
+    oscBox.items.add(juce::FlexItem(waveformAudioVisualiser).withWidth(75).withHeight(25));
+    oscBox.items.add(juce::FlexItem(setAll).withWidth(75).withHeight(50));
     
     //Adsr
     juce::FlexBox adsrBox;

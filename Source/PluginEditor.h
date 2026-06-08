@@ -41,6 +41,9 @@ private:
     
     int currentMidiNote = 60;
     
+    //Set all to current state button
+    juce::TextButton setAll{"Set All"}; 
+    
     //Dials to control the values
     juce::Slider attack;
     juce::Slider decay ;
