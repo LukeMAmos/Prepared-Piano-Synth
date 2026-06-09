@@ -26,6 +26,7 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     addAndMakeVisible(setAll);
     setAll.onClick = [this](){
         
+        audioProcessor.updateAll(currentMidiNote);
         
     };
     

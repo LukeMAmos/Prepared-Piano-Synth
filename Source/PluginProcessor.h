@@ -67,6 +67,30 @@ public:
         visualiser = vis;
     }
     
+    void updateAll(int currentPos){
+        
+        for(int i = 0 ; i < sizeof(paramsArray) ; i++){
+            
+            paramsArray[i].attack = paramsArray[currentPos].attack;
+            paramsArray[i].decay = paramsArray[currentPos].decay;
+            paramsArray[i].release = paramsArray[currentPos].release;
+            paramsArray[i].sustain = paramsArray[currentPos].sustain;
+            
+            paramsArray[i].filterType.store(paramsArray[currentPos].filterType);
+            paramsArray[i].filterResonance.store(paramsArray[currentPos].filterResonance);
+            paramsArray[i].cutoffFrequency.store(paramsArray[currentPos].filterResonance);
+            
+            paramsArray[i].coe.store(paramsArray[currentPos].coe);
+            paramsArray[i].roomSize.store(paramsArray[currentPos].roomSize);
+            paramsArray[i].wetLevel.store(paramsArray[currentPos].wetLevel);
+            
+            paramsArray[i].inputDistortion.store(paramsArray[currentPos].inputDistortion);
+            paramsArray[i].outputDistortion.store(paramsArray[currentPos].outputDistortion);
+            
+            paramsArray[i].oscType.store(paramsArray[currentPos].oscType);
+        }
+        
+    }
     juce::MidiKeyboardState keyboardState;
 private:
     
