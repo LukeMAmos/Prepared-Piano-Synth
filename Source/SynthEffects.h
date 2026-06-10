@@ -228,6 +228,27 @@ private:
     
 };
 
+//Delay class , using the delay line class , takes the delay amount and the delay level and then automatically keeps track of the postions and when to add to the next sample
+
+class Delay{
+    
+public:
+    
+    void prepare(double sampleRateIn);
+    
+    void setParameters(float delayedSampleGain , int delayInSamples);
+    
+    float process(float input);
+
+
+private:
+    
+    
+    
+    
+};
+
+
 //Take the input in multiple it by a gain value softly
 //To implement a hard clipped distortion you need to first need to apply a gain , then hard clip the audio , after hard clipping the wave needs to be shaped using a shaping function then an output gain applied to reduce the level of the signal back down to its original input level
 class SoftDistortion{
