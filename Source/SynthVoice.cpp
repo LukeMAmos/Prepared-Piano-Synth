@@ -15,6 +15,7 @@ void SynthVoice::prepare(const juce::dsp::ProcessSpec& spec)
         reverb[i].prepare(sampleRate , 2000);
     }
     filter.prepare(sampleRate);
+    delay.prepare(sampleRate, 8000); //8 Seconds Max delay 
     
     privateBuffer.setSize((int)spec.numChannels, (int)spec.maximumBlockSize);
     privateBuffer.clear();
@@ -59,12 +60,12 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     OSC.process(context);
     adsr.applyEnvelopeToBuffer(privateBuffer, 0, numSamples);
 
-    
+    //Applying the effects , to the note 
     for(int ch = 0 ; ch < outputBuffer.getNumChannels() ; ch++){
         
         for(int s = 0 ; s < numSamples ; s++){
             
-            privateBuffer.setSample(ch, s, (reverb[ch].process(filter.process(distortion.process(privateBuffer.getSample(ch, s))))));
+            privateBuffer.setSample(ch, s, (reverb[ch].process(filter.process(distortion.process(delay.process(privateBuffer.getSample(ch, s)))))));
             
         }
     }
@@ -105,6 +106,10 @@ void SynthVoice::updateValues(int midiNoteNumber)
     float inGainDis = data.inputDistortion.load();
     float outGainDis = data.outputDistortion.load();
     distortion.setParameters(inGainDis, outGainDis);
+    
+    float delayedSampleLevel = data.delayedSampleLevel.load();
+    float delayInMS = data.delayMs.load();
+    delay.setParameters(delayedSampleLevel, delayInMS);
     
     if(previousType != data.oscType){ //Only switch or update the wave if there has been a change if no change then dont update the wave
         updateOscillator(data.oscType);

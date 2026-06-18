@@ -37,7 +37,11 @@ struct NoteParams{
     std::atomic<float> inputDistortion{1.0f};
     std::atomic<float> outputDistortion{1.0f};
     
-    std::atomic<OSCType> oscType{OSCType::Square}; 
+    std::atomic<OSCType> oscType{OSCType::Square};
+    
+    std::atomic<float> delayedSampleLevel{1.0f};
+    std::atomic<float> delayMs{1.0f};
+    
 };
 
 
@@ -91,9 +95,9 @@ private:
     
     //Effects
     
-    Reverb reverb[2];
+    Reverb reverb[2]; //Dual reverb for Stereo reverb implementation
     BiquadFilter filter;
     SoftDistortion distortion; 
-    
+    Delay delay;
     
 };

@@ -61,6 +61,9 @@ private:
     juce::Slider disInGain;
     juce::Slider disOutGain;
     
+    juce::Slider delayWetLevel;
+    juce::Slider delayMs;
+    
     juce::ComboBox oscType; 
     
     
@@ -69,6 +72,7 @@ private:
     juce::GroupComponent filterGroup;
     juce::GroupComponent reverbGroup;
     juce::GroupComponent distortionGroup;
+    juce::GroupComponent delayGroup;
     juce::GroupComponent oscGroup;
     
     //Labels for the dials

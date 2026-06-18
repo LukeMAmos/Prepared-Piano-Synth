@@ -151,6 +151,26 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     disOutGain.setNumDecimalPlacesToDisplay(2);
     addAndMakeVisible(disOutGain);
     
+    delayWetLevel.setRange(0.0, 10.0);
+    delayWetLevel.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    delayWetLevel.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+    delayWetLevel.onValueChange = [this](){
+        audioProcessor.getNoteParams(currentMidiNote).delayedSampleLevel = (float)delayWetLevel.getValue();
+    };
+    delayWetLevel.setNumDecimalPlacesToDisplay(2);
+    addAndMakeVisible(delayWetLevel);
+    
+    
+    delayMs.setRange(0.0, 10.0);
+    delayMs.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    delayMs.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+    delayMs.onValueChange = [this](){
+        audioProcessor.getNoteParams(currentMidiNote).delayMs = (float)delayMs.getValue();
+    };
+    delayMs.setNumDecimalPlacesToDisplay(2);
+    addAndMakeVisible(delayMs);
+    
+    
     //Keyboard on screen
     addAndMakeVisible(visualKeyboard);
     
@@ -169,6 +189,9 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     
     distortionGroup.setText("Distortion");
     addAndMakeVisible(distortionGroup);
+    
+    delayGroup.setText("Delay");
+    addAndMakeVisible(delayGroup);
     
     //Labels for each of the dials
     
@@ -214,6 +237,10 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
     
     //Distortion
     
+    
+    //Delay
+    
+    
 }
 
 PreparedPianoSynthAudioProcessorEditor::~PreparedPianoSynthAudioProcessorEditor()
@@ -252,8 +279,9 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     //-----*** Right Column
     auto rightColumn = area;
     
-    auto reverbArea = rightColumn.removeFromTop(150);
-    auto distortionArea = rightColumn ;
+    auto reverbArea = rightColumn.removeFromTop(120);
+    auto distortionArea = rightColumn.removeFromTop(120);
+    auto delayArea = rightColumn;
     
     //OSC
     juce::FlexBox oscBox;
@@ -285,23 +313,32 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     filterBox.items.add(juce::FlexItem(filterResonance).withWidth(80).withHeight(80).withMargin(juce::FlexItem::Margin(10, 0, 10, 0)));
 
     
+    int dialW = 70;
+    int dialH = 70;
     //reverb
     juce::FlexBox reverbBox;
     reverbBox.flexDirection = juce::FlexBox::Direction::row;
     reverbBox.flexWrap = juce::FlexBox::Wrap::wrap;
     
-    reverbBox.items.add(juce::FlexItem(coe).withWidth(80).withHeight(80));
-    reverbBox.items.add(juce::FlexItem(roomSize).withWidth(80).withHeight(80));
-    reverbBox.items.add(juce::FlexItem(wetLevel).withWidth(80).withHeight(80));
+    reverbBox.items.add(juce::FlexItem(coe).withWidth(dialW).withHeight(dialH));
+    reverbBox.items.add(juce::FlexItem(roomSize).withWidth(dialW).withHeight(dialH));
+    reverbBox.items.add(juce::FlexItem(wetLevel).withWidth(dialW).withHeight(dialH));
     
     //Distortion
     juce::FlexBox distortionBox;
     distortionBox.flexDirection = juce::FlexBox::Direction::row;
     distortionBox.flexWrap = juce::FlexBox::Wrap::wrap;
     
-    distortionBox.items.add(juce::FlexItem(disInGain).withWidth(80).withHeight(80));
-    distortionBox.items.add(juce::FlexItem(disOutGain).withWidth(80).withHeight(80));
+    distortionBox.items.add(juce::FlexItem(disInGain).withWidth(dialW).withHeight(dialH));
+    distortionBox.items.add(juce::FlexItem(disOutGain).withWidth(dialW).withHeight(dialH));
     
+    //Delay
+    juce::FlexBox delayBox;
+    delayBox.flexDirection = juce::FlexBox::Direction::row;
+    delayBox.flexWrap = juce::FlexBox::Wrap::wrap;
+    
+    delayBox.items.add(juce::FlexItem(delayMs).withWidth(dialW).withHeight(dialH));
+    delayBox.items.add(juce::FlexItem(delayWetLevel).withWidth(dialW).withHeight(dialH));
     
     //Grouping the components
     
@@ -341,9 +378,14 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     
     distortionGroup.setBounds(distortionArea);
     auto disInner = distortionArea.reduced(10);
-    disInner.removeFromTop(20);
-    distortionBox.performLayout(disInner.reduced(10));
+    disInner.removeFromTop(10);
+    distortionBox.performLayout(disInner.reduced(5).toFloat());
 
+    delayGroup.setBounds(delayArea);
+    auto delInner = delayArea.reduced(10);
+    delInner.removeFromTop(10);
+    delayBox.performLayout(delInner.reduced(5).toFloat());
+    
     
 }
 
