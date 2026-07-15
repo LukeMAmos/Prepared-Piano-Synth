@@ -98,6 +98,7 @@ private:
     juce::AudioBuffer<float> currentAudioOut; 
     juce::Synthesiser synth;
     
+    //Array of 128 different structures for each of the notes 
     std::array<NoteParams, 128> paramsArray;
     
     std::atomic<juce::AudioVisualiserComponent*> visualiser{nullptr};

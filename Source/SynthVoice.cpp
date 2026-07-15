@@ -1,5 +1,6 @@
 #include "SynthVoice.h"
 
+//Initalise the voice with the pointer to the global paramArray , each of the voices shares the same parameter 
 SynthVoice::SynthVoice(std::array<NoteParams, 128>* paramsArray) : paramsArray(paramsArray) {}
 
 void SynthVoice::prepare(const juce::dsp::ProcessSpec& spec)

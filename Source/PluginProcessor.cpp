@@ -23,7 +23,7 @@ PreparedPianoSynthAudioProcessor::PreparedPianoSynthAudioProcessor()
 #endif
 {
     for(int i = 0; i < 16; i++)
-        synth.addVoice(new SynthVoice(&paramsArray)); //Takes the pointer location of the parameter array so that teh note being played on the voice can be updated with the correct data , an array is used here because its pointer poisiton is the same across the run time 
+        synth.addVoice(new SynthVoice(&paramsArray)); //Takes the pointer location of the parameter array so that the note being played on the voice can be updated with the correct data , an array is used here because its pointer poisiton is the same across the run time 
     synth.addSound(new SynthSound());
     
 }
@@ -164,10 +164,12 @@ void PreparedPianoSynthAudioProcessor::processBlock (juce::AudioBuffer<float>& b
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
     
+    //On screen keyboard adding the midi data to the midi messages buffer
     keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
-    
+    //Pass the the midi messages through into the synth
     synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
     
+    //Audio visualiser to display the audio signal being sent out from the synthesiser 
     if(visualiser.load() != nullptr){
         
         visualiser.load()->pushBuffer(buffer);

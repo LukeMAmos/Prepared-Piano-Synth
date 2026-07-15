@@ -30,7 +30,7 @@ PreparedPianoSynthAudioProcessorEditor::PreparedPianoSynthAudioProcessorEditor (
         
     };
     
-    
+    //Button and parameters set up 
     oscType.addItem("Sine", 1);
     oscType.addItem("Square", 2 );
     oscType.addItem("Triangle", 3);
@@ -341,7 +341,6 @@ void PreparedPianoSynthAudioProcessorEditor::resized()
     delayBox.items.add(juce::FlexItem(delayWetLevel).withWidth(dialW).withHeight(dialH));
     
     //Grouping the components
-    
     oscGroup.setBounds(oscArea);
     auto oscInner = oscArea.reduced(10);
     oscInner.removeFromTop(5);
@@ -404,6 +403,7 @@ void PreparedPianoSynthAudioProcessorEditor::handleNoteOff(juce::MidiKeyboardSta
 //Updating the displayed value on the dial when the current note on changes.
 void PreparedPianoSynthAudioProcessorEditor::updateDials(int midiNoteNumber){
     
+    //This links the dials to the current pressed notes 
     auto& params = audioProcessor.getNoteParams(midiNoteNumber);
     
     oscType.setSelectedId((int)params.oscType.load()+1 , juce::dontSendNotification);
