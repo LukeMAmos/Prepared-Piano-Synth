@@ -67,7 +67,7 @@ public:
     
     void updateValues(int midiNoteNumber); 
     
-    // Override this so JUCE doesn't cull the voice while reverb is draining
+    // Override this so JUCE doesn't kill the voice while reverb is draining
     bool isVoiceActive() const override
     {
         return adsr.isActive() || ringReverb ; 
@@ -95,9 +95,9 @@ private:
     
     //Effects
     
-    Reverb reverb[2]; //Dual reverb for Stereo reverb implementation
-    BiquadFilter filter;
-    SoftDistortion distortion; 
-    Delay delay;
+    Reverb reverb[2]; //Reverb for each channel 
+    BiquadFilter filter[2];
+    SoftDistortion distortion;
+    Delay delay[2];
     
 };

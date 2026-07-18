@@ -1,6 +1,6 @@
 #include "SynthVoice.h"
 
-//Initalise the voice with the pointer to the global paramArray , each of the voices shares the same parameter 
+
 SynthVoice::SynthVoice(std::array<NoteParams, 128>* paramsArray) : paramsArray(paramsArray) {}
 
 void SynthVoice::prepare(const juce::dsp::ProcessSpec& spec)
@@ -14,10 +14,10 @@ void SynthVoice::prepare(const juce::dsp::ProcessSpec& spec)
     
     for(int i = 0 ; i < 2 ; i++){
         reverb[i].prepare(sampleRate , 2000);
+        
+        filter[i].prepare(sampleRate);
+        delay[i].prepare(sampleRate, 8000); //8 Seconds Max delay
     }
-    filter.prepare(sampleRate);
-    delay.prepare(sampleRate, 8000); //8 Seconds Max delay 
-    
     privateBuffer.setSize((int)spec.numChannels, (int)spec.maximumBlockSize);
     privateBuffer.clear();
 }
@@ -65,8 +65,8 @@ void SynthVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
     for(int ch = 0 ; ch < outputBuffer.getNumChannels() ; ch++){
         
         for(int s = 0 ; s < numSamples ; s++){
-            
-            privateBuffer.setSample(ch, s, (reverb[ch].process(filter.process(distortion.process(delay.process(privateBuffer.getSample(ch, s)))))));
+            float sample = (reverb[ch].process(filter[ch].process(distortion.process(delay[ch].process(privateBuffer.getSample(ch, s))))));
+            privateBuffer.setSample(ch, s, sample);
             
         }
     }
@@ -94,15 +94,9 @@ void SynthVoice::updateValues(int midiNoteNumber)
     float roomSize = data.roomSize.load();
     float wetAm = data.wetLevel.load();
 
-    for(int i = 0 ; i < 2 ; i++){
-        reverb[i].setParameters(coe,2500.0f, roomSize, wetAm);
-    }
-    
     float cutoff = data.cutoffFrequency.load();
     float resonance = data.filterResonance.load();
     auto type = data.filterType.load();
-    
-    filter.setParameters(cutoff, resonance, type);
     
     float inGainDis = data.inputDistortion.load();
     float outGainDis = data.outputDistortion.load();
@@ -110,8 +104,17 @@ void SynthVoice::updateValues(int midiNoteNumber)
     
     float delayedSampleLevel = data.delayedSampleLevel.load();
     float delayInMS = data.delayMs.load();
-    delay.setParameters(delayedSampleLevel, delayInMS);
+
     
+    for(int  i = 0 ; i < 2 ; i++){
+        
+        reverb[i].setParameters(coe,2500.0f, roomSize, wetAm);
+        
+        filter[i].setParameters(cutoff, resonance, type);
+        
+        delay[i].setParameters(delayedSampleLevel, delayInMS);
+        
+    }
     if(previousType != data.oscType){ //Only switch or update the wave if there has been a change if no change then dont update the wave
         updateOscillator(data.oscType);
         previousType = data.oscType;

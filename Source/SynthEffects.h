@@ -11,6 +11,8 @@
 #pragma once
 #include <JuceHeader.h>
 
+//Effects based on diagrams in Audio Processes by David Creasey
+
 class DelayLine{
     
 public:

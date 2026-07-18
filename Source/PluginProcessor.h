@@ -70,8 +70,9 @@ public:
     
     void updateAll(int currentPos){
         
+        //Update all paramters to the current note selected
         for(int i = 0 ; i < numMidiNotes  ; i++){
-            
+
             paramsArray[i].attack = paramsArray[currentPos].attack;
             paramsArray[i].decay = paramsArray[currentPos].decay;
             paramsArray[i].release = paramsArray[currentPos].release;
